@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
+<?import javafx.scene.shape.Rectangle?>
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
     <VBox fx:id="vbox" layoutX="10.0" layoutY="10.0" prefHeight="600.0" prefWidth="800.0" spacing="10" xmlns="http://javafx.com/javafx/2.2" xmlns:fx="http://javafx.com/fxml/1">
         <style>
             -fx-padding: 10;
         </style>
         <fx:define>
-            <ToggleGroup fx:id="group" />
+            <ToggleGroup fx:id="toggleGroup" />
         </fx:define>
         <children>
          <HBox alignment="TOP_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -19,13 +19,16 @@
                  -fx-padding: 10;
              </style>
             <children>
-                <RadioButton mnemonicParsing="false" text="Nodes" toggleGroup="$group" selected="true"/>
-                <RadioButton mnemonicParsing="false" text="Paths" toggleGroup="$group" selected="false"/>
+                <RadioButton fx:id="addNodes" mnemonicParsing="false" text="Nodes" toggleGroup="$toggleGroup" selected="true"/>
+                <RadioButton fx:id="addPaths" mnemonicParsing="false" text="Paths" toggleGroup="$toggleGroup" selected="false"/>
             </children>
          </HBox>
-            <Canvas fx:id="canvas" height="500" width="780" onMouseClicked="#canvasClick">
+            <Pane fx:id="pane">
+                <Rectangle height="480" width="780" fill="lightgray" onMouseClicked="#rectClick">
 
-            </Canvas>
+                </Rectangle>
+
+            </Pane>
             <HBox alignment="BOTTOM_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
                 <style>
                     -fx-padding: 10;
