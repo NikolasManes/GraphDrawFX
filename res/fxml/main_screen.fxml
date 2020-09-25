@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+    <VBox fx:id="vbox" layoutX="10.0" layoutY="10.0" prefHeight="600.0" prefWidth="800.0" spacing="10" xmlns="http://javafx.com/javafx/2.2" xmlns:fx="http://javafx.com/fxml/1">
+        <style>
+            -fx-padding: 10;
+        </style>
+        <fx:define>
+            <ToggleGroup fx:id="group" />
+        </fx:define>
+        <children>
+         <HBox alignment="TOP_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+             <style>
+                 -fx-padding: 10;
+             </style>
+            <children>
+                <RadioButton mnemonicParsing="false" text="Nodes" toggleGroup="$group" selected="true"/>
+                <RadioButton mnemonicParsing="false" text="Paths" toggleGroup="$group" selected="false"/>
+            </children>
+         </HBox>
+            <Canvas fx:id="canvas" height="500" width="780" onMouseClicked="#canvasClick">
+
+            </Canvas>
+            <HBox alignment="BOTTOM_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                <style>
+                    -fx-padding: 10;
+                </style>
+                <children>
+                    <ChoiceBox prefWidth="75.0" >
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="BFS" />
+                                <String fx:value="DFS" />
+                                <String fx:value="Prim" />
+                                <String fx:value="Dijkstra" />
+                            </FXCollections>
+                        </items>
+                    </ChoiceBox>
+                    <Button fx:id="runAlgorithm" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="RUN" textAlignment="CENTER" />
+                </children>
+            </HBox>
+        </children>
+    </VBox>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+</GridPane>
