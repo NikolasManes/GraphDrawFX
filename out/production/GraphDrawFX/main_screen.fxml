@@ -41,7 +41,11 @@
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Button fx:id="runAlgorithm" onMouseClicked="#runAlgorithm" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="RUN" textAlignment="CENTER" />
+                    <Button fx:id="runAlgorithm" onMouseClicked="#runAlgorithm" alignment="CENTER_LEFT" contentDisplay="CENTER" mnemonicParsing="false" text="RUN" textAlignment="CENTER" />
+                    <Region prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="previousRoute" onMouseClicked="#previousRoute" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="PREV" textAlignment="CENTER" />
+                    <Button fx:id="nextRoute" onMouseClicked="#nextRoute" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="NEXT" textAlignment="CENTER" />
+                    <Button fx:id="clearGraph" onMouseClicked="#clearGraph" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="CLEAR" textAlignment="CENTER" />
                 </children>
             </HBox>
         </children>

@@ -9,23 +9,28 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 
 public class Controller implements Initializable {
 
-    private Graph graph = new Graph();
+    private Graph graph;
     private boolean nodeIsSelected;
     private GNode startNode;
     private GNode endNode;
     private int pathWeight;
+    private int destinationNodeID;
+    private int listItem = 0;
+    private GNode lastNode;
+    private List<GRoute> dijkstraRoutes;
     private DecimalFormat towDigitsFormat = new DecimalFormat("00");
+    private Color backgroundColor = Color.LIGHTGRAY;
     private Color strokeColorDefault = Color.RED;
     private Color fillColorDefault = Color.BLACK;
     private Color nodeColorDefault = Color.BLUE;
     private Color pathColorDefault = Color.PURPLE;
+    private Color routeColor = Color.ORANGE;
     @FXML
     private Canvas canvas;
     private GraphicsContext graphicsContext;
@@ -38,6 +43,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        graph = new Graph();
+        dijkstraRoutes = new ArrayList<>();
         nodeIsSelected = false;
         graphicsContext = canvas.getGraphicsContext2D();
         setScene();
@@ -45,7 +52,7 @@ public class Controller implements Initializable {
 
     public void setScene(){
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        graphicsContext.setFill(Color.LIGHTGRAY);
+        graphicsContext.setFill(backgroundColor);
         graphicsContext.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
         graphicsContext.setFill(fillColorDefault);
         graphicsContext.setStroke(strokeColorDefault);    }
@@ -73,7 +80,7 @@ public class Controller implements Initializable {
                         break;
                     }
                 }
-            } else{
+            } else {
                 for (GNode gNode: graph.getNodes()){
                     if (gNode.nodeSelected(mouseEvent.getX(), mouseEvent.getY())){
                         graphicsContext.strokeOval(gNode.getCordX()-15, gNode.getCordY()-15, 30, 30);
@@ -98,6 +105,7 @@ public class Controller implements Initializable {
         graphicsContext.setFill(pathColorDefault);
         for (GPath gPath: graph.getPaths()){
             drawPath(graphicsContext, gPath.getStart().getCordX(), gPath.getStart().getCordY(), gPath.getEnd().getCordX(), gPath.getEnd().getCordY(), gPath.getWeight());
+            graphicsContext.setStroke(pathColorDefault);
         }
         graphicsContext.setStroke(strokeColorDefault);
         graphicsContext.setFill(fillColorDefault);
@@ -110,15 +118,42 @@ public class Controller implements Initializable {
         double midX = x1+(dx/2);
         double midY = y1+(dy/2);
         double angle = Math.atan2(dy, dx);
+        double lineEndX = x2-10*Math.cos(angle);
+        double lineEndY = y2-10*Math.sin(angle);
         double arrowAngle = Math.PI/6;
-        double point1X = midX+10*Math.cos(Math.PI-arrowAngle+angle);
-        double point1Y = midY+10*Math.sin(Math.PI-arrowAngle+angle);
-        double point2X = midX+10*Math.cos(Math.PI+angle+arrowAngle);
-        double point2Y = midY+10*Math.sin(Math.PI+angle+arrowAngle);
+        double point1X = lineEndX+15*Math.cos(Math.PI-arrowAngle+angle);
+        double point1Y = lineEndY+15*Math.sin(Math.PI-arrowAngle+angle);
+        double point2X = lineEndX+15*Math.cos(Math.PI+angle+arrowAngle);
+        double point2Y = lineEndY+15*Math.sin(Math.PI+angle+arrowAngle);
 
-        gc.strokeLine(x1+10*Math.cos(angle), y1+10*Math.sin(angle), x2-10*Math.cos(angle), y2-10*Math.sin(angle));
-        gc.fillPolygon(new double[]{midX, point1X, point2X, midX}, new double[]{midY, point1Y, point2Y, midY}, 4);
-        gc.strokeText(String.valueOf(weight), midX-10*Math.cos(angle), midY+10*Math.sin(angle));
+        gc.strokeLine(x1+10*Math.cos(angle), y1+10*Math.sin(angle), lineEndX, lineEndY);
+        gc.fillPolygon(new double[]{lineEndX, point1X, point2X, lineEndX}, new double[]{lineEndY, point1Y, point2Y, lineEndY}, 4);
+        gc.fillOval(midX-8, midY-8, 16, 16);
+        gc.setStroke(backgroundColor);
+        if (weight<10){
+            gc.strokeText(String.valueOf(weight), midX-3, midY+4);
+        } else {
+            gc.strokeText(String.valueOf(weight), midX-7, midY+4);
+        }
+    }
+
+    public void drawRoute(GRoute route){
+        lastNode = route.getEndPoint();
+        graphicsContext.setStroke(routeColor);
+        graphicsContext.setFill(routeColor);
+        for (GPath path: route.getPaths()){
+            drawPath(graphicsContext, path.getStart().getCordX(), path.getStart().getCordY(), path.getEnd().getCordX(), path.getEnd().getCordY(), path.getWeight());
+            graphicsContext.setStroke(routeColor);
+        }
+        graphicsContext.fillOval(lastNode.getCordX()-15, lastNode.getCordY()-15, 30, 30);
+        graphicsContext.setStroke(backgroundColor);
+        if (route.getTotalWeight()<10){
+            graphicsContext.strokeText(String.valueOf(route.getTotalWeight()), lastNode.getCordX()-3, lastNode.getCordY()+4);
+        } else {
+            graphicsContext.strokeText(String.valueOf(route.getTotalWeight()), lastNode.getCordX()-7, lastNode.getCordY()+4);
+        }
+        graphicsContext.setStroke(strokeColorDefault);
+        graphicsContext.setFill(fillColorDefault);
     }
 
     public void runAlgorithm(MouseEvent mouseEvent) {
@@ -126,21 +161,58 @@ public class Controller implements Initializable {
 
         switch (choiceBox.getValue().toString()){
             case "BFS":
-                System.out.println("BFS "+ choiceBox.getValue().toString());
+                TextInputDialog dialogBFS = new TextInputDialog("0");
+                dialogBFS.setTitle("Destination Node");
+                dialogBFS.setContentText("Please enter the destination node: ");
+                Optional<String> resultBFS = dialogBFS.showAndWait();
+                resultBFS.ifPresent(nodeID -> destinationNodeID = Integer.parseInt(nodeID));
+                drawRoute(runBFS(graph, 0, destinationNodeID));
                 break;
             case "DFS":
-                System.out.println("DFS "+ choiceBox.getValue().toString());
+                TextInputDialog dialogDFS = new TextInputDialog("0");
+                dialogDFS.setTitle("Destination Node");
+                dialogDFS.setContentText("Please enter the destination node: ");
+                Optional<String> resultDFS = dialogDFS.showAndWait();
+                resultDFS.ifPresent(nodeID -> destinationNodeID = Integer.parseInt(nodeID));
+                drawRoute(runDFS(graph, 0, destinationNodeID));
                 break;
             case "Prim":
                 System.out.println("Prim "+ choiceBox.getValue().toString());
                 break;
             case "Dijkstra":
-                System.out.println("Dijkstra "+ choiceBox.getValue().toString());
+                listItem = 0;
+                dijkstraRoutes = runDijkstra(graph);
+                drawRoute(dijkstraRoutes.get(listItem));
                 break;
 
         }
     }
-    public static GRoute runBFS(Graph graph, int startID, int endID){
+
+    public void clearGraph(MouseEvent mouseEvent) {
+        setScene();
+        drawGraph();
+    }
+
+    public void nextRoute(MouseEvent mouseEvent) {
+        setScene();
+        drawGraph();
+        if(listItem < dijkstraRoutes.size()-1){
+            listItem++;
+        }
+        drawRoute(dijkstraRoutes.get(listItem));
+    }
+
+    public void previousRoute(MouseEvent mouseEvent) {
+        setScene();
+        drawGraph();
+        if(listItem > 0){
+            listItem--;
+        }
+        drawRoute(dijkstraRoutes.get(listItem));
+
+    }
+
+    public GRoute runBFS(Graph graph, int startID, int endID){
         List<GNode> frontier = new ArrayList<>();
         List<GNode> exploredNodes = new ArrayList<>();
         List<GRoute> routes = new ArrayList<>();
@@ -199,7 +271,7 @@ public class Controller implements Initializable {
         return null;
     }
 
-    public static GRoute runDFS(Graph graph, int startID, int endID){
+    public GRoute runDFS(Graph graph, int startID, int endID){
         Deque<GNode> nodesToCheck = new ArrayDeque<>();
         List<Integer> exploredNodes = new ArrayList<>();
         List<GRoute> routesCreated = new ArrayList<>();
@@ -247,11 +319,11 @@ public class Controller implements Initializable {
         return null;
     }
 
-    public static void runPrim(Graph graph){
+    public void runPrim(Graph graph){
         System.out.println("Not implemented yet!");
     }
 
-    public static List<GRoute> runDijkstra(Graph graph) {
+    public List<GRoute> runDijkstra(Graph graph) {
         // Declare a list to store the routes
         List<GRoute> routes = new ArrayList<>();
         // Now add all the others the weight is MAX
