@@ -5,6 +5,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.canvas.Canvas?>
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
     <VBox fx:id="vbox" layoutX="10.0" layoutY="10.0" prefHeight="600.0" prefWidth="800.0" spacing="10" xmlns="http://javafx.com/javafx/2.2" xmlns:fx="http://javafx.com/fxml/1">
         <style>
@@ -23,18 +24,14 @@
                 <RadioButton fx:id="addPaths" mnemonicParsing="false" text="Paths" toggleGroup="$toggleGroup" selected="false"/>
             </children>
          </HBox>
-            <Pane fx:id="pane">
-                <Rectangle height="480" width="780" fill="lightgray" onMouseClicked="#rectClick">
-
-                </Rectangle>
-
-            </Pane>
+            <Canvas fx:id="canvas" height="480" width="780" onMouseClicked="#canvasClick">
+            </Canvas>
             <HBox alignment="BOTTOM_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
                 <style>
                     -fx-padding: 10;
                 </style>
                 <children>
-                    <ChoiceBox prefWidth="75.0" >
+                    <ChoiceBox fx:id="choiceBox" prefWidth="75.0" >
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="BFS" />
@@ -44,7 +41,7 @@
                             </FXCollections>
                         </items>
                     </ChoiceBox>
-                    <Button fx:id="runAlgorithm" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="RUN" textAlignment="CENTER" />
+                    <Button fx:id="runAlgorithm" onMouseClicked="#runAlgorithm" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="RUN" textAlignment="CENTER" />
                 </children>
             </HBox>
         </children>
